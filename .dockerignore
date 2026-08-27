@@ -1,0 +1,11 @@
+.git
+.beads
+node_modules
+dist
+coverage
+*.log
+.DS_Store
+playwright-*.log
+*.png
+*.jpeg
+*.jpg

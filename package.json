@@ -1,0 +1,45 @@
+{
+  "name": "safari-ios-webinspector",
+  "version": "0.1.0",
+  "description": "MCP bridge for Safari Web Inspector and iPhone WebKit sessions",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "bin": {
+    "safari-ios-webinspector": "dist/src/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "shakeout": "tsx scripts/shakeout.ts",
+    "probe:automation": "node --conditions=node --import tsx/esm scripts/probe-automation.ts",
+    "trace:broker": "tsx scripts/trace-broker.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run build && npm run test"
+  },
+  "keywords": [
+    "mcp",
+    "safari",
+    "ios",
+    "webkit",
+    "debugging",
+    "iphone"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.1",
+    "appium-ios-remotexpc": "^0.41.0",
+    "appium-remote-debugger": "^15.6.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.0",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
