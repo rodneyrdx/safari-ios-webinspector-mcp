@@ -1,10 +1,9 @@
 # iPhone Mirroring Research
 
-Date: 2026-03-25
-
 ## Question
 
-Could Apple’s iPhone Mirroring feature help this project fully remote-drive iPhone Safari from Codex?
+Could Apple’s iPhone Mirroring feature provide a programmatic way to drive
+iPhone Safari from a Mac?
 
 ## Short answer
 
@@ -41,7 +40,6 @@ Apple’s support page also notes:
 - the iPhone must be nearby and turned on
 - the iPhone screen must be locked when using iPhone Mirroring
 - some features like camera and microphone are not compatible with Mirroring
-- iPhone Mirroring is not currently available in the European Union
 
 ## What Apple does not document
 

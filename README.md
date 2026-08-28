@@ -1,35 +1,34 @@
 # Safari iOS Web Inspector MCP
 
-A macOS-only MCP server for inspecting and automating iPhone Safari and iPhone Chrome sessions through Safari Web Inspector.
+A TypeScript MCP server for inspecting iPhone Safari and Chrome WebKit sessions
+from macOS.
 
-## Status
+## Implemented
 
-This repo contains a working first implementation of:
-
-- environment checks for macOS, Xcode, `idevice_id`, and `ios_webkit_debug_proxy`
-- trusted-device enrichment with physical UDIDs and iOS versions from `libimobiledevice`
+- environment checks for macOS, Xcode, `libimobiledevice`,
+  `ios_webkit_debug_proxy` and `safaridriver`
+- device and page discovery
 - iOS WebKit bridge lifecycle management
-- device and page discovery through `ios_webkit_debug_proxy`
-- managed iPhone Safari sessions through Apple `safaridriver`
-- managed iPhone Safari sessions through the raw WebKit `Automation` domain
-- protocol-backed runtime evaluation, console capture, and network event buffering
-- DOM snapshotting and page-level automation through runtime-injected JavaScript
-- Safari/Web Inspector UI fallback for crash detection, reload attempts, and screenshots
-- debug bundle export
+- managed Safari sessions through Apple `safaridriver`
+- managed sessions through the raw WebKit `Automation` domain
+- runtime evaluation, DOM snapshots and page actions where the selected backend
+  exposes them
+- console and network event buffering on compatible inspector sessions
+- crash-state checks, reload attempts, screenshots and debug-bundle export
 
-Current limitation:
+## Limits
 
-- The bridge is protocol-first and pragmatic. It normalizes several WebKit event shapes, but iOS/WebKit protocol differences can still reduce available capabilities per page.
-- On the currently attached real iPhone, healthy Safari pages downgrade to `transportMode: broker_only`, so runtime/page automation is intentionally disabled and the server falls back to evidence/recovery workflows.
-- The new managed `safaridriver` path gives safe browser-only automation in a fresh Safari automation window, but it does not yet attach to an existing live Safari tab.
-- The new `launch_automation_page` path also gives safe browser-only automation in a fresh isolated Automation context, but like Safari WebDriver it does not adopt an existing normal Safari tab.
-- Console and network streaming are still unavailable on the `safaridriver` managed backend.
-- Console and network streaming are also unavailable on the raw Automation managed backend.
+- Existing Safari tabs can be discovered, but the tested iOS WebKit transport
+  does not expose page-domain control for them. Those sessions report
+  `transportMode: broker_only` instead of accepting automation commands.
+- `safaridriver` and the raw `Automation` backend create separate automation
+  contexts; they do not adopt an already-open normal Safari tab.
+- Console and network streaming are not available on either managed backend.
+- The server does not reset, restore, pair, update or otherwise control the
+  iPhone outside the browser session.
 
-Safety boundary:
-
-- this project is browser-only by design
-- no reset, restore, pairing mutation, firmware, or general iPhone system automation is in scope
+The test suite contains 29 tests covering the protocol modes, managed sessions,
+DOM tools, UI fallback, recovery and debug bundles.
 
 ## Install
 
@@ -85,14 +84,10 @@ npm run probe:automation -- --udid <DEVICE_UDID>
 
 ## Provenance and privacy
 
-This public repository contains an independently authored implementation built
-against documented WebKit behavior and the public interfaces of its declared
-dependencies. Research notes link to the upstream projects and documentation
-that informed protocol investigation.
-
 Device identifiers, local paths, captured pages, debug bundles, and customer or
-application-specific material are not included. Tests use synthetic device data
-and `example.com` URLs.
+application-specific material are not included. Research notes link to the
+upstream code and documentation used during protocol investigation. Tests use
+synthetic device data and `example.com` URLs.
 
 ## License
 

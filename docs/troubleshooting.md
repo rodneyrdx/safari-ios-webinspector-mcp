@@ -57,15 +57,16 @@ sudo node node_modules/appium-ios-remotexpc/scripts/tunnel-creation.mjs --udid <
 
 Then retry `attach_page`.
 
-If the tunnel is already running but `remoteDebugger` still reports `false`, the registry port may only be visible in root's `@appium/strongbox` store because the tunnel was started with `sudo`. This repo now probes the live registry HTTP API and seeds the current user strongbox automatically when possible. If that still fails, confirm:
-
-```bash
-curl http://127.0.0.1:42314/remotexpc/tunnels
-```
+If the tunnel is already running but `remoteDebugger` still reports `false`,
+the registry port may only be visible in root's `@appium/strongbox` store
+because the tunnel was started with `sudo`. The server probes the registry and
+copies the discovered port into the current user's strongbox when possible.
 
 ## Existing-tab attach fails fast with an Automation-domain limitation
 
-That means the Appium shim connected, but Safari did not expose a normal selectable DevTools page target for the existing tab. On the connected iPhone this currently manifests as:
+That means the Appium shim connected, but Safari did not expose a normal
+selectable DevTools page target for the existing tab. On the tested device this
+manifested as:
 
 - a new `WIRTypeAutomation` page appears after an automation-session request
 - that page accepts socket traffic

@@ -1,26 +1,17 @@
 # Research: iPhone `ios_webkit_debug_proxy` Target Broker Behavior
 
-Date: 2026-03-25
-
 ## Why this exists
 
 The first end-to-end device shakeout showed that live iPhone page sockets exposed by `ios_webkit_debug_proxy` did not behave like a direct page-domain websocket. This note captures the protocol findings, source-level research, and the resulting implementation direction.
 
 ## Live observations
 
-Environment:
-
-- macOS host with `libimobiledevice`
-- `ios_webkit_debug_proxy`
-- connected device: `00000000-0000000000000000`
-- visible device name: `Test iPhone`
-
 Discovery worked:
 
 - `idevice_id -l` returned the connected phone
-- `curl http://127.0.0.1:9221/` listed the device
-- `curl http://127.0.0.1:9222/json/list` listed inspectable pages
-- websocket endpoints at `ws://127.0.0.1:9222/devtools/page/<n>` accepted connections
+- the proxy device endpoint listed the phone
+- the proxy page endpoint listed inspectable pages
+- the returned page websocket endpoints accepted connections
 
 Unexpected protocol behavior:
 
@@ -106,7 +97,7 @@ Expected outcomes:
 
 ## Validation status
 
-Confirmed on March 25, 2026 with `npm run shakeout` against healthy pages:
+Confirmed with `npm run shakeout` against healthy pages:
 
 - non-crashed Safari pages now report `transportMode: broker_only`
 - operator notes identify the page target and the failed broker probes
@@ -117,7 +108,7 @@ That means the current bridge now meets the minimum acceptance bar for this prot
 - it no longer mislabels the page as fully automatable
 - it degrades to recovery/evidence mode with explicit guidance
 
-Additional trace validation on March 25, 2026 with `npm run trace:broker`:
+Additional validation with `npm run trace:broker`:
 
 - direct `Target.setPauseOnStart` succeeds with a top-level `{ result: {} }`
 - wrapped `Target.sendMessageToTarget` calls also receive top-level `{ result: {} }`

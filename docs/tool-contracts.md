@@ -73,7 +73,7 @@ Use capability flags to decide whether a tool should be attempted or treated as 
 
 `remote_debugger_attached` means the session was attached to an existing Safari tab through Appium’s real-device remote debugger stack. On iOS 18+ devices this backend requires the Appium Remote XPC tunnel registry to be reachable from the current user context; this repo now auto-probes the local registry API and syncs the discovered port into the current user strongbox when needed.
 
-Current live limitation on the connected iPhone:
+Observed limitation on the tested device:
 
 - the shim can enumerate attached Safari tabs
 - some tabs currently expose an Automation-oriented shim surface instead of a normal selectable DevTools page target

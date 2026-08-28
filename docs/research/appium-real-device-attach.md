@@ -1,7 +1,5 @@
 # Appium Real-Device Attach Research
 
-Date: 2026-03-25
-
 ## Summary
 
 The current path for existing-tab attach on modern iPhones is Appium’s real-device remote debugger stack, not the old `ios_webkit_debug_proxy` page websocket.
@@ -39,16 +37,17 @@ From the installed `appium-ios-remotexpc` package in this repo:
 - if no registry port exists, it throws:
   `Tunnel registry port not found. Please run the tunnel creation script first`
 
-## Live local finding on this Mac
+## Device-test result
 
-When I exercised `appium-remote-debugger` and the underlying Remote XPC shim directly against the connected iPhone:
+Testing `appium-remote-debugger` and the Remote XPC shim against a USB-connected
+iPhone established the following:
 
-- the tunnel registry did come up successfully through:
+- the tunnel registry started through:
   `sudo node node_modules/appium-ios-remotexpc/scripts/tunnel-creation.mjs --udid <DEVICE_UDID> --keep-open`
-- the registry HTTP API was reachable at:
-  `http://localhost:42314/remotexpc/tunnels`
-- `appium-ios-remotexpc` still failed in this non-root user context until the tunnel registry port was mirrored into the current user strongbox store used by `@appium/strongbox`
-- after seeding the current user strongbox item `appium-xcuitest-driver/tunnelRegistryPort=42314`, `Services.getAvailableDevices()` succeeded and the local environment check began reporting `remoteDebugger=true`
+- the non-root client also needed the registry port in the current user's
+  `@appium/strongbox` store
+- after that value was present, `Services.getAvailableDevices()` succeeded and
+  the environment check reported `remoteDebugger=true`
 - the Appium shim transport then connected successfully with `useWebInspectorShim=true`
 - attached-page discovery worked and returned live Safari pages
 
@@ -63,7 +62,8 @@ What still fails:
 Implication:
 
 - existing-tab attach is no longer blocked only on the tunnel registry prerequisite
-- the tunnel/bootstrap problem is solved on this Mac by syncing the registry port into the current user strongbox
+- the tunnel/bootstrap prerequisite can be satisfied by syncing the registry
+  port into the current user's strongbox
 - the remaining blocker is protocol-level: the iOS 26 shim is exposing an Automation-oriented surface for attached Safari tabs instead of the classic page-target flow that `appium-remote-debugger` expects
 - the server should fail fast with an explicit limitation for this case instead of hanging indefinitely
 
@@ -85,25 +85,17 @@ What the live probe validated on the connected phone:
 - `Automation.takeScreenshot` returned image data for that newly created context
 - the already-open normal Safari content tab did not appear as an Automation browsing context
 
-Latest saved local probe artifact:
-
-- `/Users/example/.cache/safari-ios-webinspector/probes/2026-03-25T13-43-19-631Z-automation-shim.json`
-
-Most recent concrete live values from that probe:
-
-- normal Safari pages still included the existing content tab at page id `1`
-- the shim automation target appeared separately as page id `49`
-- the created automation browsing context handle was `page-00000000-0000-4000-8000-000000000001`
-- `Automation.evaluateJavaScriptFunction` returned `Example Domain`
-- `Automation.takeScreenshot` returned `172901` decoded bytes
+The probe stores its full response under the tool's local cache directory. Those
+artifacts can contain local page metadata and are intentionally excluded from
+the repository.
 
 Follow-up managed-backend validation:
 
 - the repo now exposes `launch_automation_page` as a first-class MCP tool backed by the raw Automation domain
-- a live run on March 25, 2026 created managed browsing context `page-00000000-0000-4000-8000-000000000002`
+- a live run created a separate managed browsing context
 - navigation to `https://example.com/` succeeded
 - JS evaluation returned `Example Domain`
-- screenshot capture again returned `172901` decoded bytes
+- screenshot capture returned image data
 
 This confirms the raw Automation path is viable as a managed-session backend. It does not change the existing-tab conclusion above.
 
@@ -123,7 +115,7 @@ Before using the Appium existing-tab attach backend on this iPhone generation, s
 sudo node node_modules/appium-ios-remotexpc/scripts/tunnel-creation.mjs --udid <DEVICE_UDID> --keep-open
 ```
 
-Because this environment cannot supply a sudo password non-interactively, tunnel startup must currently be done by the operator.
+Tunnel startup requires an operator because the upstream script uses `sudo`.
 
 After the tunnel starts, this repo now auto-probes the registry on `127.0.0.1` and seeds the current user strongbox when needed. That is Mac-local state only; it does not modify the phone.
 
@@ -131,7 +123,7 @@ After the tunnel starts, this repo now auto-probes the registry on `127.0.0.1` a
 
 The current iOS 26 shim behavior is consistent with WebKit's `Automation` protocol surface rather than classic Web Inspector page domains.
 
-Validated locally:
+Observed through the tested shim:
 
 - `Automation.getBrowsingContexts` exists
 - `Runtime.evaluate` returns `'Runtime' domain was not found`

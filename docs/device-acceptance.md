@@ -42,9 +42,9 @@ Use one USB-connected iPhone with Safari Web Inspector enabled.
    - Run `export_debug_bundle`
    - Expected: bundle directory contains session, console, network, crash, and screenshot evidence files
 
-## Latest managed-session result
+## Observed managed-session result
 
-Validated on March 25, 2026 on the connected unlocked iPhone:
+On a USB-connected test iPhone:
 
 - `launch_managed_page` equivalent flow succeeded through `safaridriver`
 - JS eval worked
@@ -56,4 +56,6 @@ Validated on March 25, 2026 on the connected unlocked iPhone:
 - page screenshot capture worked
 - the created managed context was isolated from the already-open normal Safari tab
 
-The remaining acceptance gap is existing-tab attach parity. The current iPhone/OS combination appears to expose isolated Automation contexts instead of adopting an already-open normal Safari tab.
+The remaining acceptance gap is existing-tab attach parity. The tested WebKit
+transport exposes isolated Automation contexts instead of adopting an
+already-open normal Safari tab.
